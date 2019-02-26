@@ -1,38 +1,35 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_from_directory
 from werkzeug import secure_filename
 from sklearn.externals import joblib
+import os
+
+
+IMAGE_FOLDER = os.path.join('static', 'graphs')
 
 app = Flask(__name__)
 
+#Set the upload Fodler to image Folder
+app.config['UPLOAD_FOLDER'] = IMAGE_FOLDER
+
+
 @app.route('/')
 def index():
-
-
      clf = joblib.load('pythonScripts/svc_pca_mod.pkl')
-     UPLOAD_FOLDER = "myflaskapp/data"
-     ALLOWED_EXTENSION = set('html')
-
-
-
      return render_template('home.html')
 
-@app.route('/uploader', methods = ['GET', 'POST'])
+#This is the upload section of code
+@app.route('/uploaded', methods = ['GET', 'POST'])
 def uploader_file():
-   if request.method == 'POST':
-      f = request.files['file']
-      f.save(secure_filename(f.filename))
-      return ''
+   if request.method == 'POST': #Checks if the post method was sent
+      f = request.files['file'] #f gets the fiels that were sent
+      f.save(secure_filename(f.filename)) #save f
+      return displayResult()
 
-
-
-
+#This displays the image
 @app.route('/displayResult')
 def displayResult():
-
-
-    return render_template('displayResult.html')
-
-
+    full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'unknown.jpg')
+    return render_template('displayResult.html', user_images = full_filepath)
 
 
 if __name__ == '__main__':
