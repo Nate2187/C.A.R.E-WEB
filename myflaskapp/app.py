@@ -28,7 +28,7 @@ def uploader_file():
 #This displays the image
 @app.route('/displayResult')
 def displayResult():
-    full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'unknown.jpg')
+    full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'unknown.png')
     return render_template('displayResult.html', user_images = full_filepath)
 
 
