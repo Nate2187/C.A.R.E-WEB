@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request, send_from_directory
 from werkzeug import secure_filename
 from sklearn.externals import joblib
+import predict
 import os
 
 
@@ -23,14 +24,20 @@ def uploader_file():
    if request.method == 'POST': #Checks if the post method was sent
       f = request.files['file'] #f gets the fiels that were sent
       f.save(secure_filename(f.filename)) #save f
+      makePrediction(f.filename) #'inputTestData.json'
       return displayResult()
 
 #This displays the image
 @app.route('/displayResult')
 def displayResult():
-    full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'unknown.png')
+    full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'newFigure.png')
     return render_template('displayResult.html', user_images = full_filepath)
 
+def makePrediction(fileName):
+    prediction = predict.predict(fileName)
+    values = predict.splitPred(prediction)
+
+    predict.saveGraph(values[1], values[0])
 
 if __name__ == '__main__':
     app.run(debug = True)
