@@ -1,11 +1,11 @@
 from flask import Flask, render_template, jsonify
-from sklearn.externals import joblib
+#from sklearn.externals import joblib
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-json_ = request.json
+#json_ = request.json
 
 
 #Import the MODEL
