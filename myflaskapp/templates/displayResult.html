@@ -1,12 +1,89 @@
 {% extends 'layout.html' %}
-
 {% block body %}
-<div class = "jumbotron text-center">
+<div class = "container-fluid jumbotron text-center">
+
+   <div class = "row align-items-start">
+
+      <div class = "col">
+         <!-- This div represents the header text above the graph -->
+
+         <div class = "wrapper">
+            <!-- This div represents the header text above the graph -->
+            <div class = "header">
+               <h1>Graph 1 Results:</h1>
+               <p class = "lead">Below are the results!</p>
+            </div>
+
+              <!-- This div represents the graph image -->
+              <img src="{{ user_images }}" class = "img-fluid"  alt="Graph Image">
+
+            <!-- This div represents the text below the graph -->
+            <div class = "container graph-description">
+               <p class = "text" style = "margin-top: 2.5%;">
+                  GRAPH DESCRIPTION GRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH
+                  DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTION
+               </p>
+            </div>
+         </div>
+      </div>
+      </div>
+
+<div class = "row align-items center">
+
+      <div class = "col">
+         <!-- This div represents the header text above the graph -->
+         <div class = "wrapper">
+
+            <!-- This div represents the header text above the graph -->
+            <div class = "header">
+               <h1>Graph 2 RESULTS:</h1>
+               <p class = "lead">Below are the results!</p>
+            </div>
+
+            <!-- This div represents the graph image -->
+            <img src="{{ user_images }}" class = "img-fluid"  alt="Graph Image">
+
+            <!-- This div represents the text below the graph -->
+            <div class = "container graph-description">
+               <p class = "text" style = "margin-top: 2.5%;">
+                  GRAPH DESCRIPTION GRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH
+                  DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTIONGRAPH DESCRIPTION
+""               </p>
+            </div>
+         </div>
+      </div>
+    </div>
+
+<div class = "row align-items end">
+
+<div class="container">
+  <h1>What does this mean?</h1>
+
+          <br />
+
+          <div id = "innerVelocity">
+
+                Last Predicted Velocity:
+
+                  <div id = "value">
+
+                    {{predictionResults}}
+
+                    </div>
+
+                </div>
 
 
-  <h1>AI MODEL RESULTS:</h1>
-<p class = "lead">Below are the results!</p>
-<img src="{{ user_images }}"  alt="Graph Image">
-  </div>
+          <br />
 
+          <div id = "innerPrediction">
+          BASED ON THIS PREDICTION YOU HAVE
+          </div>
+
+
+    </div>
+
+    </div>
+
+</div>
 {% endblock %}

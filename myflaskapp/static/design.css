@@ -1,0 +1,21 @@
+h1 {
+  color:#0fcaa0;
+}
+
+#velocityResults {
+
+
+
+}
+
+#innerVelocity{
+  color: #163150;
+}
+
+#innerPrediction{
+  color: #163150;
+}
+
+#innerVelocity #value{
+  font-size: -webkit-xxx-large;
+}
