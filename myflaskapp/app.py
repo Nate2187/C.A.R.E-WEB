@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-from flask import Flask, render_template, jsonify
-#from sklearn.externals import joblib
-
-app = Flask(__name__)
-
-@app.route('/')
-def index():
-#json_ = request.json
-
-
-#Import the MODEL
-
-
-#Create a dictionary with Key as Cell(#), value as new dictionary
-#subdictionary key as Window(#), value as new subdictionary
-#subdictionary key as Feature(#), value as float
-
-
-=======
 from flask import Flask, render_template, jsonify, request, send_from_directory
 from werkzeug import secure_filename
 from sklearn.externals import joblib
 import predict
 import os
->>>>>>> f2522f1e3365e77b4e1e927fbfd8c741f17a9be3
 
 
 IMAGE_FOLDER = os.path.join('static', 'graphs')
