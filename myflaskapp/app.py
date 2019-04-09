@@ -9,7 +9,7 @@ IMAGE_FOLDER = os.path.join('static', 'graphs')
 
 app = Flask(__name__)
 
-#Set the upload Fodler to image Folder
+#Set the upload Folder to image Folder
 app.config['UPLOAD_FOLDER'] = IMAGE_FOLDER
 
 
@@ -27,25 +27,19 @@ def uploader_file():
       makePrediction(f.filename) #'inputTestData.json'
       return displayResult()
 
-#This displays the image
-@app.route('/displayResult')
-def displayResult():
-    full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'newFigure.png')
-    return render_template('displayResult.html', user_images = full_filepath)
+#Hook to display prediction result in html
+predictionResultsFromData = [15, 14, 15, 15.1]
+
+#This displays the images
+@app.route('/<predictionResults>')
+def displayResult(predictionResults):
+    full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'newFigure1.png')
+    return render_template('displayResult.html', user_images = full_filepath, predictionResults = predictionResultsFromData[-1])
 
 def makePrediction(fileName):
     prediction = predict.predict(fileName)
     values = predict.splitPred(prediction)
-
     predict.saveGraph(values[1], values[0])
 
 if __name__ == '__main__':
     app.run(debug = True)
-
-
-    #json_ = request.json
-    #Import the MODEL
-    #Create a dictionary with Key as Cell(#), value as new dictionary
-    #subdictionary key as Window(#), value as new subdictionary
-    #subdictionary key as Feature(#), value as float
-    #enable the upload
