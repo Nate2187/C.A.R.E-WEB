@@ -3,26 +3,37 @@ import json
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import CARE_part2
 
 def predict(fileName):
-    with open(fileName) as f:
-        cellData = json.load(f)
-
+    modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 3, fileName)
+    
     #model = pickle.load(open('.\\pythonScripts\\svc_pca_mod.pkl', "rb"))
-    model = pickle.load(open('.\\pythonScripts\\forest_pca_mod.pkl', "rb"))
+    #model = pickle.load(open('.\\pythonScripts\\forest_pca_mod.pkl', "rb"))
 
-    cellList = getData(cellData)
-    prediction = model.predict(cellList)
-    return prediction
+    
+    inputArray = getInputArray(modelMaker.inputData, len(modelMaker.inputData))
+    trueInput = getTrueInput(inputArray)
+    model = modelMaker.generateModel(2)
+    prediction = model.predict(trueInput)
+    return prediction[0]
 
-#get passed amount of pca features for cell
-def getData(cellData):
+#return an array of the input data
+def getInputArray(cellData, numFeats):
     data = []
-    for n in cellData:
-        data.append(cellData[n])
-    data = np.array(data).transpose()
+    converter = CARE_part2.CellDataMerge()
+    for f in range(numFeats):
+        data.append(converter.getFeat(cellData, f))
     return data
 
+def getTrueInput(inputArray):
+    inputVal = []
+    inputs = []
+    for f in inputArray:
+        inputs += f[len(f) - 1:]
+    inputVal.append(inputs)
+    return inputVal
+    
 #designed to graph with test data to compare the predicted values with
 #TODO... get rid of test_Y.  graph inputed data AND predicted data
 def saveGraph(test_Y, pred_Y):
@@ -58,6 +69,7 @@ def splitPred(pred_val):
 
 
 predicted_array = predict('inputTestData.json')
-values = splitPred(predicted_array)
+print(predicted_array)
+#values = splitPred(predicted_array)
 
-saveGraph(values[1], values[0])
+#saveGraph(values[1], values[0])
