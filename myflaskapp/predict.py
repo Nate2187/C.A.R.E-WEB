@@ -4,20 +4,32 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import CARE_part2
+import copy
 
 def predict(modelMaker, timeOfPred = None):
     #model = pickle.load(open('.\\pythonScripts\\svc_pca_mod.pkl', "rb"))
     #model = pickle.load(open('.\\pythonScripts\\forest_pca_mod.pkl', "rb"))
 
     trueInput = modelMaker.getTrueInput()
-
+    model = modelMaker.generateModel(2)
+    
     #change the time value to timeOfPred if one is given
     if timeOfPred is not None:
-        trueInput[0][0] = timeOfPred
+        prediction = multiPredict(trueInput, timeOfPred, model)
+    else:
+        prediction = model.predict(trueInput)
+        
+    return prediction
 
-    model = modelMaker.generateModel(2)
-    prediction = model.predict(trueInput)
-    return prediction[0]
+def multiPredict(trueInput, timeOfPred, model):
+    predArray = [[],[]]
+    #changingIn = copy.deepcopy(trueInput)
+    changingIn = [[17, 7, 2.389259e+02, -7.623412e-02]]
+    for i in range(timeOfPred):
+        changingIn[0][0] = i
+        predArray[0].append(trueInput[0][0] + i)
+        predArray[1].append(model.predict(changingIn)[0])
+    return predArray
 
 #def saveGraph(test_Y, pred_Y):
 #    time = populateTime(len(pred_Y))
@@ -78,22 +90,12 @@ def populateTime(start,time):
         timeArray.append(i)
     return timeArray
 
-def splitPred(pred_val):
-    #test data to compare predicted value with based off sample from original data set
-    with open("inputTestData.json") as f:
-        sample_data = json.load(f)
 
-    values = []
-    values.append(pred_val[:len(pred_val) - 1])
-    true_val = sample_data["Feature3"]
-    values.append(np.array(true_val[1:]).transpose())
-    return values
-
-modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 3, 'inputTestData.json')
-prediction = predict(modelMaker)
+"""
+#test code
+modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 4, 'inputTestData.json')
+prediction = predict(modelMaker, 100)
 
 
 print(prediction)
-#values = splitPred(predicted_array)
-
-#saveGraph(values[1], values[0])
+"""

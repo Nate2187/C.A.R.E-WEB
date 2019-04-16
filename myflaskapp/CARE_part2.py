@@ -35,6 +35,8 @@ class CARE_part2:
             self.finalCellData = self.appendNewCell(self.cellData, self.inputData) #create new data set that includes user input
             cellMerge = CellDataMerge()
             self.finalListedData = cellMerge.getCombinedCells(self.finalCellData, numFeat - 1)
+            #pcaMerge = PCAImplement()
+            #self.finalListedData = pcaMerge.getPCACells(self.finalCellData, numFeat - 1)
             
         self.numFeat = numFeat
         
@@ -95,9 +97,7 @@ class CARE_part2:
     def getInputArray(self):
         data = []
         converter = CellDataMerge()
-        for f in range(self.numFeat - 1):
-            data.append(converter.getCombCellFeat(self.inputData, f))
-        data = [converter.timeArray] + data
+        data = converter.getCombinedCells(self.inputData, self.numFeat - 1)
         return data
     
     #returns the last input set from the input array
@@ -150,9 +150,8 @@ class PCAImplement:
         return winFeat.transpose()[0].tolist()
     
     def updateTimeArray(self, numTimes):
-        if self.updateTime:
-            for i in range(numTimes):
-                self.timeArray.append(i)
+        for i in range(numTimes):
+            self.timeArray.append(i)
     
 class CellDataMerge:
     def __init__(self):
@@ -196,8 +195,10 @@ class CellDataMerge:
         if self.updateTime:
             for i in range(numTimes):
                 self.timeArray.append(i)
-            
+"""     
+#testing code      
 hello = CARE_part2('testWithZeros.json', 4, 'inputTestData.json')
 hello.generateModel(2)
 
 testing = hello.getInputArray()
+"""

@@ -25,9 +25,9 @@ def uploader_file():
    if request.method == 'POST': #Checks if the post method was sent
       f = request.files['file'] #f gets the fiels that were sent
       f.save(secure_filename(f.filename)) #save f
-      timeOfPred = 0    #TODO add input on screen for time
+      timeOfPred = 100    #TODO add input on screen for time
       makePrediction(f.filename, timeOfPred) #'inputTestData.json'
-      return displayResult()
+      return displayResult([1])
 
 #Hook to display prediction result in html
 predictionResultsFromData = [15, 14, 15, 15.1]
@@ -41,15 +41,15 @@ def displayResult(predictionResults):
     return render_template('displayResult.html',user_images1 =full_filepath1, user_images = full_filepath, predictionResults = predictionResultsFromData[-1])
 
 def makePrediction(inputFileName, timeOfPred):
-    modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 3, inputFileName)
-    prediction = predict.predict(modelMaker)
+    modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 4, inputFileName)
+    prediction = predict.predict(modelMaker, timeOfPred)
 
     inputVals = modelMaker.getInputArray()
     #input data set with predicted data added at end
     x_vals = inputVals[0] + [inputVals[0][len(inputVals[0]) - 1] + timeOfPred] #add the latest time to timeOfPred when appending
     y_vals = inputVals[(len(inputVals) - 1)] + [prediction]
     #values = predict.splitPred(prediction)
-    predict.saveGraph(inputVals[2], prediction)
+    predict.saveGraph(inputVals[2], prediction[1])
 
 if __name__ == '__main__':
     app.run(debug = True)
