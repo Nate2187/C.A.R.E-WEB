@@ -15,7 +15,6 @@ import numpy as np
 from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score, accuracy_score
 from sklearn.externals import joblib
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 import pickle
 import copy
 
@@ -29,23 +28,26 @@ class CARE_part2:
         if inputFileAddress is None:
             self.finalCellData = self.cellData
             self.inputData = []
+            self.finalListedData = [[]]
         else:
             with open(inputFileAddress) as f1:
                 self.inputData = json.load(f1)
             self.finalCellData = self.appendNewCell(self.cellData, self.inputData) #create new data set that includes user input
+            cellMerge = CellDataMerge()
+            self.finalListedData = cellMerge.getCombinedCells(self.finalCellData, numFeat - 1)
             
-        self.TRAIN_PERCENT = .8
         self.numFeat = numFeat
-        self.finalListedData = [[]]
+        
         
     #TODO: may need to change if input is standardized to cell-window-feature
     def appendNewCell(self, baseData, inputData):
         cellName = "Cell" + str(len(self.cellData) + 1)
         baseDataClone = copy.deepcopy(baseData)
-        if inputData.get('Window1') is None:
-            baseDataClone[cellName] = {'Window1':inputData}
+        if inputData.get('Cell1') is None:
+            if inputData.get('Window1') is None:
+               baseDataClone[cellName] = {'Window1':inputData}
         else:
-            baseDataClone[cellName] = inputData
+            baseDataClone[cellName] = inputData['Cell1']
         return baseDataClone
         
     #in case saving the model to a file is preferable 
@@ -59,17 +61,14 @@ class CARE_part2:
     def generateModel(self, alg):
         #pcaImp = PCAImplement()
         #cell_data = pcaImp.getPCACells(self.finalCellData, 3) #reassemble data using chosen method
-        cellMerge = CellDataMerge()
-        cell_data = cellMerge.getCombinedCells(self.finalCellData, 3)
-        self.finalListedData = cell_data
         
         #get training input for pca data
-        train_XList = self.getPercentFeatureData(True, cell_data, self.TRAIN_PERCENT)   #keep for record
+        train_XList = self.getXData(self.finalListedData)   #keep for record
         train_X = np.array(train_XList).transpose()
         
         #get training target data for pca data
-        target = cell_data[len(cell_data) - 1]
-        train_Y = target[1:int(len(target) * self.TRAIN_PERCENT) + 1] #expected output
+        target = self.finalListedData[len(self.finalListedData) - 1]
+        train_Y = target[1:int(len(target))] #expected output
         
         #choose learning algorithm to use
         if alg == 0:
@@ -86,21 +85,19 @@ class CARE_part2:
         
         return CARE_model
         
-    def getPercentFeatureData(self, train, featureData, percent):
+    def getXData(self, featureData):
         combinedFeatures = []
         for feature in featureData:
-            if train:
-                combinedFeatures.append(feature[:int(len(feature) * percent)])
-            else:
-                combinedFeatures.append(feature[int(len(feature) * percent + 1):int(len(feature) - 1)])
+            combinedFeatures.append(feature[:int(len(feature) - 1)])
         return combinedFeatures
 
     #return a 2D array of the input data
     def getInputArray(self):
         data = []
         converter = CellDataMerge()
-        for f in range(self.numFeat):
-            data.append(converter.getFeat(self.inputData, f))
+        for f in range(self.numFeat - 1):
+            data.append(converter.getCombCellFeat(self.inputData, f))
+        data = [converter.timeArray] + data
         return data
     
     #returns the last input set from the input array
@@ -112,13 +109,19 @@ class CARE_part2:
             inputs += f[len(f) - 1:]
         inputVal.append(inputs)
         return inputVal
+    
 
 class PCAImplement:
+    def __init__(self):
+        self.timeArray = []
+        
     #get passed amount of pca features for cell
     def getPCACells(self, inputData, fNum):   
         pcaVals = []
         for n in range(fNum):
             pcaVals.append(self.getPCACellFeature(inputData, n))
+        self.updateTimeArray(len(pcaVals[0]))
+        pcaVals = [self.timeArray] + pcaVals
         return pcaVals
     
     #gets pca value in cell for passed feature
@@ -146,12 +149,22 @@ class PCAImplement:
         #return window feature in following format x = [[...]]
         return winFeat.transpose()[0].tolist()
     
-class CellDataMerge:
+    def updateTimeArray(self, numTimes):
+        if self.updateTime:
+            for i in range(numTimes):
+                self.timeArray.append(i)
     
+class CellDataMerge:
+    def __init__(self):
+        self.timeArray = []
+        self.updateTime = True
+        
     def getCombinedCells(self, inputData, numFeats):
         combinedCellData = []
         for f in range(numFeats):
             combinedCellData.append(self.getCombCellFeat(inputData, f))
+            self.updateTime = False
+        combinedCellData = [self.timeArray] + combinedCellData
         return combinedCellData
                     
     def getCombCellFeat(self, inputData, fNum):
@@ -166,7 +179,9 @@ class CellDataMerge:
         feature = []
         for w in cellObj:    #for every window in inputData
             winObj = cellObj[w]
-            feature += self.getFeat(winObj, fNum)
+            feat = self.getFeat(winObj, fNum)
+            self.updateTimeArray(len(feat))
+            feature += feat
         return feature
                 
     def getFeat(self, winObj, fNum):
@@ -176,6 +191,13 @@ class CellDataMerge:
             return winObj[featName] #append passed feature to featureArray
         else:
             return []
+        
+    def updateTimeArray(self, numTimes):
+        if self.updateTime:
+            for i in range(numTimes):
+                self.timeArray.append(i)
             
-hello = CARE_part2('testWithZeros.json', 3, 'inputTestData.json')
+hello = CARE_part2('testWithZeros.json', 4, 'inputTestData.json')
+hello.generateModel(2)
+
 testing = hello.getInputArray()

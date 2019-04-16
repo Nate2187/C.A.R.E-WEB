@@ -36,18 +36,20 @@ predictionResultsFromData = [15, 14, 15, 15.1]
 @app.route('/<predictionResults>')
 def displayResult(predictionResults):
     full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'newFigure1.png')
-    return render_template('displayResult.html', user_images = full_filepath, predictionResults = predictionResultsFromData[-1])
+    full_filepath1 = os.path.join(app.config['UPLOAD_FOLDER'], 'accelGraph.png')
+    timeInput = request.form['userTimeInput']
+    return render_template('displayResult.html',user_images1 =full_filepath1, user_images = full_filepath, predictionResults = predictionResultsFromData[-1])
 
 def makePrediction(inputFileName, timeOfPred):
     modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 3, inputFileName)
     prediction = predict.predict(modelMaker)
-    
+
     inputVals = modelMaker.getInputArray()
     #input data set with predicted data added at end
     x_vals = inputVals[0] + [inputVals[0][len(inputVals[0]) - 1] + timeOfPred] #add the latest time to timeOfPred when appending
     y_vals = inputVals[(len(inputVals) - 1)] + [prediction]
     #values = predict.splitPred(prediction)
-    predict.saveGraph(x_vals, y_vals)
+    predict.saveGraph(inputVals[2], prediction)
 
 if __name__ == '__main__':
     app.run(debug = True)
