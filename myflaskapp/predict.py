@@ -5,34 +5,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import CARE_part2
 
-def predict(fileName):
-    modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 3, fileName)
-
+def predict(modelMaker, timeOfPred = None):
     #model = pickle.load(open('.\\pythonScripts\\svc_pca_mod.pkl', "rb"))
     #model = pickle.load(open('.\\pythonScripts\\forest_pca_mod.pkl', "rb"))
 
-
-    inputArray = getInputArray(modelMaker.inputData, len(modelMaker.inputData))
-    trueInput = getTrueInput(inputArray)
+    trueInput = modelMaker.getTrueInput()
+    
+    #change the time value to timeOfPred if one is given
+    if timeOfPred is not None:
+        trueInput[0][0] = timeOfPred
+        
     model = modelMaker.generateModel(2)
     prediction = model.predict(trueInput)
     return prediction[0]
-
-#return an array of the input data
-def getInputArray(cellData, numFeats):
-    data = []
-    converter = CARE_part2.CellDataMerge()
-    for f in range(numFeats):
-        data.append(converter.getFeat(cellData, f))
-    return data
-
-def getTrueInput(inputArray):
-    inputVal = []
-    inputs = []
-    for f in inputArray:
-        inputs += f[len(f) - 1:]
-    inputVal.append(inputs)
-    return inputVal
 
 #def saveGraph(test_Y, pred_Y):
 #    time = populateTime(len(pred_Y))
@@ -56,7 +41,7 @@ def getTrueInput(inputArray):
 def saveGraph(arrayOfInput1, arrayOfOutput1):
     arrayOfInput = [20,25,23,29]
     arrayOfOutput= [33,35,34, 34]
-    arrayOfOutput= [arrayOfInput[-1]] + arrayOfOutput #
+    arrayOfOutput= [arrayOfInput[-1]] + arrayOfOutput
     #plt.scatter(time, test_Y, color='black')
     arrayHolder = arrayOfInput+ arrayOfOutput
     time1 = populateTime(0,len(arrayOfInput)) #[1,2,3,4]
@@ -92,9 +77,11 @@ def splitPred(pred_val):
     values.append(np.array(true_val[1:]).transpose())
     return values
 
+modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 3, 'inputTestData.json')
+prediction = predict(modelMaker)
 
-predicted_array = predict('inputTestData.json')
-print(predicted_array)
+
+print(prediction)
 #values = splitPred(predicted_array)
 
-saveGraph(values[1], values[0])
+#saveGraph(values[1], values[0])

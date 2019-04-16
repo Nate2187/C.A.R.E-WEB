@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request, send_from_directory
 from werkzeug import secure_filename
 from sklearn.externals import joblib
 import predict
+import CARE_part2
 import os
 
 
@@ -24,7 +25,8 @@ def uploader_file():
    if request.method == 'POST': #Checks if the post method was sent
       f = request.files['file'] #f gets the fiels that were sent
       f.save(secure_filename(f.filename)) #save f
-      makePrediction(f.filename) #'inputTestData.json'
+      timeOfPred = 0    #TODO add input on screen for time
+      makePrediction(f.filename, timeOfPred) #'inputTestData.json'
       return displayResult()
 
 #Hook to display prediction result in html
@@ -36,10 +38,16 @@ def displayResult(predictionResults):
     full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'newFigure1.png')
     return render_template('displayResult.html', user_images = full_filepath, predictionResults = predictionResultsFromData[-1])
 
-def makePrediction(fileName):
-    prediction = predict.predict(fileName)
-    values = predict.splitPred(prediction)
-    predict.saveGraph(values[1], values[0])
+def makePrediction(inputFileName, timeOfPred):
+    modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 3, inputFileName)
+    prediction = predict.predict(modelMaker)
+    
+    inputVals = modelMaker.getInputArray()
+    #input data set with predicted data added at end
+    x_vals = inputVals[0] + [inputVals[0][len(inputVals[0]) - 1] + timeOfPred] #add the latest time to timeOfPred when appending
+    y_vals = inputVals[(len(inputVals) - 1)] + [prediction]
+    #values = predict.splitPred(prediction)
+    predict.saveGraph(x_vals, y_vals)
 
 if __name__ == '__main__':
     app.run(debug = True)

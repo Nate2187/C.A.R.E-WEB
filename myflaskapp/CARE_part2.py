@@ -38,7 +38,7 @@ class CARE_part2:
         self.numFeat = numFeat
         self.finalListedData = [[]]
         
-        
+    #TODO: may need to change if input is standardized to cell-window-feature
     def appendNewCell(self, baseData, inputData):
         cellName = "Cell" + str(len(self.cellData) + 1)
         baseDataClone = copy.deepcopy(baseData)
@@ -95,7 +95,23 @@ class CARE_part2:
                 combinedFeatures.append(feature[int(len(feature) * percent + 1):int(len(feature) - 1)])
         return combinedFeatures
 
-   # def get
+    #return a 2D array of the input data
+    def getInputArray(self):
+        data = []
+        converter = CellDataMerge()
+        for f in range(self.numFeat):
+            data.append(converter.getFeat(self.inputData, f))
+        return data
+    
+    #returns the last input set from the input array
+    def getTrueInput(self):
+        inputVal = []
+        inputs = []
+        inputArray = self.getInputArray()
+        for f in inputArray:
+            inputs += f[len(f) - 1:]
+        inputVal.append(inputs)
+        return inputVal
 
 class PCAImplement:
     #get passed amount of pca features for cell
@@ -162,4 +178,4 @@ class CellDataMerge:
             return []
             
 hello = CARE_part2('testWithZeros.json', 3, 'inputTestData.json')
-hello.generateModel(2)
+testing = hello.getInputArray()
