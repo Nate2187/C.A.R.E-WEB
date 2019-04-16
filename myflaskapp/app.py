@@ -26,19 +26,19 @@ def uploader_file():
       f = request.files['file'] #f gets the fiels that were sent
       f.save(secure_filename(f.filename)) #save f
       timeOfPred = 100    #TODO add input on screen for time
-      makePrediction(f.filename, timeOfPred) #'inputTestData.json'
-      return displayResult([1])
+      inVals = makePrediction(f.filename, timeOfPred) #'inputTestData.json'
+      return displayResult([1], inVals)
 
 #Hook to display prediction result in html
-predictionResultsFromData = [15, 14, 15, 15.1]
+predictionResultsFromData = []
 
 #This displays the images
 @app.route('/<predictionResults>')
-def displayResult(predictionResults):
+def displayResult(predictionResults, inVals):
     full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'newFigure1.png')
     full_filepath1 = os.path.join(app.config['UPLOAD_FOLDER'], 'accelGraph.png')
     timeInput = request.form['userTimeInput']
-    return render_template('displayResult.html',user_images1 =full_filepath1, user_images = full_filepath, predictionResults = predictionResultsFromData[-1])
+    return render_template('displayResult.html',user_images1 =full_filepath1, user_images = full_filepath, predictionResults = inVals)
 
 def makePrediction(inputFileName, timeOfPred):
     modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 4, inputFileName)
@@ -49,7 +49,8 @@ def makePrediction(inputFileName, timeOfPred):
     x_vals = inputVals[0] + [inputVals[0][len(inputVals[0]) - 1] + timeOfPred] #add the latest time to timeOfPred when appending
     y_vals = inputVals[(len(inputVals) - 1)] + [prediction]
     #values = predict.splitPred(prediction)
-    predict.saveGraph(inputVals[2], prediction[1])
+    predict.saveGraph(inputVals[len(inputVals) - 1], prediction[1])
+    return prediction[1][-1]
 
 if __name__ == '__main__':
     app.run(debug = True)

@@ -195,10 +195,9 @@ class CellDataMerge:
         if self.updateTime:
             for i in range(numTimes):
                 self.timeArray.append(i)
-"""     
+    
 #testing code      
 hello = CARE_part2('testWithZeros.json', 4, 'inputTestData.json')
 hello.generateModel(2)
 
 testing = hello.getInputArray()
-"""

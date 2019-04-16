@@ -91,11 +91,10 @@ def populateTime(start,time):
     return timeArray
 
 
-"""
+
 #test code
 modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 4, 'inputTestData.json')
 prediction = predict(modelMaker, 100)
 
 
 print(prediction)
-"""
