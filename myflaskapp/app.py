@@ -25,8 +25,8 @@ def uploader_file():
    if request.method == 'POST': #Checks if the post method was sent
       f = request.files['file'] #f gets the fiels that were sent
       f.save(secure_filename(f.filename)) #save f
-      timeOfPred = 100    #TODO add input on screen for time
-      inVals = makePrediction(f.filename, timeOfPred) #'inputTestData.json'
+      timeInput = request.form['userTimeInput']
+      inVals = makePrediction(f.filename, int(timeInput)) #'inputTestData.json'
       return displayResult([1], inVals)
 
 #Hook to display prediction result in html
@@ -37,7 +37,7 @@ predictionResultsFromData = []
 def displayResult(predictionResults, inVals):
     full_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'newFigure1.png')
     full_filepath1 = os.path.join(app.config['UPLOAD_FOLDER'], 'accelGraph.png')
-    timeInput = request.form['userTimeInput']
+    
     return render_template('displayResult.html',user_images1 =full_filepath1, user_images = full_filepath, predictionResults = inVals)
 
 def makePrediction(inputFileName, timeOfPred):
