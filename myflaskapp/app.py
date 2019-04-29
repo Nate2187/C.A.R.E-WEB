@@ -5,7 +5,8 @@ import predict
 import CARE_part2
 import os
 
-
+DATA_FILE = 'training_data.json'
+NUM_FEATURES = 4
 IMAGE_FOLDER = os.path.join('static', 'graphs')
 
 app = Flask(__name__)
@@ -41,14 +42,11 @@ def displayResult(predictionResults, inVals):
     return render_template('displayResult.html',user_images1 =full_filepath1, user_images = full_filepath, predictionResults = inVals)
 
 def makePrediction(inputFileName, timeOfPred):
-    modelMaker = CARE_part2.CARE_part2('testWithZeros.json', 4, inputFileName)
+    modelMaker = CARE_part2.CARE_part2(DATA_FILE, NUM_FEATURES, inputFileName)
     prediction = predict.predict(modelMaker, timeOfPred)
 
     inputVals = modelMaker.getInputArray()
-    #input data set with predicted data added at end
-    x_vals = inputVals[0] + [inputVals[0][len(inputVals[0]) - 1] + timeOfPred] #add the latest time to timeOfPred when appending
-    y_vals = inputVals[(len(inputVals) - 1)] + [prediction]
-    #values = predict.splitPred(prediction)
+    
     predict.saveGraph(inputVals[len(inputVals) - 1], prediction[1])
     return prediction[1][-1]
 
